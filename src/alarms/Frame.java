@@ -2,6 +2,7 @@ package alarms;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 class Frame {
 	
@@ -29,17 +30,19 @@ class Frame {
 	 * then top to bottom.
 	 * @return
 	 */
-	static Frame of(int height, int width, List<Boolean> data) {
+	static Frame of(int height, int width, List<Boolean> data) { //!!!create
 		assert data.size() == width * height : "data wrong length";
 		assert height > 0 : "height must be positive";
 		assert width > 0 : "width must be positive";
-		
-		ArrayList<ArrayList<Boolean>> matrix = new ArrayList<ArrayList<Boolean>>();
-		
+
+		ArrayList<ArrayList<Boolean>> matrix = new ArrayList<>();
+
 		//Populate the matrix
 		for (int y = 0; y < height; y++) {
+			matrix.add(new ArrayList<>());
 			for (int x = 0; x < width; x++) {
-				matrix.get(y).set(x, data.get(x * y));
+				matrix.get(y).add(false);
+				matrix.get(y).set(x, data.get(x + width * y));
 			}
 		}
 		
@@ -81,6 +84,7 @@ class Frame {
 	 * in the given frame.
 	 */
 	private boolean isShiftedBy(int xShift, int yShift, Frame frame) {
+		assert Objects.nonNull(frame): "the input frame is null";
 		assert this.width == frame.width : "width does not match";
 		assert this.height == frame.height : "height does not match";
 		
@@ -91,15 +95,13 @@ class Frame {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				//Check if there is a mismatch
-				if (this.pixelValue(x, y) == true) {
-					try {
-						if (frame.pixelValue(x + xShift, y + yShift) == false) {
-							//The pixel in frame is different
-							return false;
-						}
-					} catch (Exception e) {
-						//We have gone out of bounds
+				try {
+					if (frame.pixelValue(x + xShift, y + yShift) != this.pixelValue(x, y)) {
+						//The pixel in frame is different
+						return false;
 					}
+				} catch (AssertionError e) {
+					//We have gone out of bounds
 				}
 			}
 		}
@@ -108,17 +110,15 @@ class Frame {
 		return true;
 	}
 	
-	boolean hasFloatingPixels() {
+	void removeFloatingPixels() { //??? removeFloatingPixels
 		for (int y = 0; y < height - 1; y++) {
 			for (int x = 0; x < width; x++) {
 				//Check if current pixel is on, but the pixel below is off
 				if (pixelValue(x, y) && !pixelValue(x, y + 1)) {
-					return true;
+					matrix.get(y).set(x, false);
 				}
 			}
 		}
-		
-		return false;
 	}
 	
 	/**

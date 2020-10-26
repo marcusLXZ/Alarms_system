@@ -43,9 +43,7 @@ public class CameraData {
 			//Create a copy because we don't want to modify frames
 			filteredFrames = frames;
 			for (Frame frame : filteredFrames) {
-				if (frame.hasFloatingPixels()) {
-					filteredFrames.remove(frame);
-				}
+				frame.removeFloatingPixels();
 			}
 		}
 		List<FramePair> changes = new ArrayList<FramePair>();
@@ -68,7 +66,7 @@ public class CameraData {
 			FramePair currentPair = changes.get(i);
 			FramePair nextPair = changes.get(i + 1);
 			//Check if frameSet returns back in next change
-			if (currentPair.current != nextPair.next) {
+			if (currentPair.current == nextPair.next) {
 				removeList.add(currentPair);
 			}
 		}
@@ -83,11 +81,8 @@ public class CameraData {
 		}
 		
 		//Return whether there are changes not caused by camera error/other causes besides the boxes
-		if (changes.isEmpty()) {
-			return false;
-		}
 		//There must be some changes in the boxes
-		return true;
+		return !changes.isEmpty();
 	}
 	
 	/**
