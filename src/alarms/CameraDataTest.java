@@ -17,9 +17,26 @@ public class CameraDataTest {
 		
 		camera.addFrame(data1);
 		camera.addFrame(data2);
+
+		assertTrue(camera.changeInBoxes());
 		camera.addFrame(data1);
-		
 		assertFalse(camera.changeInBoxes());
+
+	}
+
+	@Test
+	public void testChangeInBoxes1() {
+		CameraData camera = new CameraData(2, 3, true);
+
+		List<Boolean> data1 = List.of(true, true, true, true, true, true);
+		List<Boolean> data2 = List.of(false, false, false, false, false, true);
+
+		camera.addFrame(data1);
+		camera.addFrame(data2);
+		camera.addFrame(data1);
+		camera.addFrame(data2);
+		assertFalse(camera.changeInBoxes());
+
 	}
 
 }

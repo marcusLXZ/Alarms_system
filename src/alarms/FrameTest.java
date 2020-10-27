@@ -57,8 +57,22 @@ public class FrameTest {
 	public void testIsShifted() {
 		Frame frame = Frame.of(2, 3, data);
 		Frame frame2 = Frame.of(2, 3, shiftedData);
-		
+
 		assertTrue(frame.isShifted(frame2));
+	}
+
+	@Test
+	public void testEquals() {
+		Frame frame = Frame.of(2, 3, data);
+		Frame frame2 = Frame.of(2, 3, shiftedData);
+
+		Frame frame5 = Frame.of(2, 3, data);
+
+
+		assertNotEquals(frame, frame2);
+		assertNotEquals(frame, frame2);
+		assertEquals(frame,frame5);
+
 	}
 
 }

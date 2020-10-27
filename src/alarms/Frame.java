@@ -9,6 +9,11 @@ class Frame {
 	private ArrayList<ArrayList<Boolean>> matrix;
 	private final int height;
 	private final int width;
+	private boolean downwardsShift;
+
+	public boolean isDownwardsShift() {
+		return downwardsShift;
+	}
 	
 	/**
 	 * @param matrix Each element of this ArrayList is a row of the frame represented by an ArrayList. The rows should
@@ -41,7 +46,7 @@ class Frame {
 		for (int y = 0; y < height; y++) {
 			matrix.add(new ArrayList<>());
 			for (int x = 0; x < width; x++) {
-				matrix.get(y).add(false);
+				matrix.get(y).add(false);//??
 				matrix.get(y).set(x, data.get(x + width * y));
 			}
 		}
@@ -64,6 +69,9 @@ class Frame {
 		for (int x = -1; x <= 1; x++) {
 			for (int y = -1; y <= 1; y++) {
 				if (isShiftedBy(x, y, frame)) {
+					if(y==-1){
+						downwardsShift = true;
+					}
 					return true;
 				}
 			}
@@ -72,7 +80,6 @@ class Frame {
 		//No shifts detected
 		return false;
 	}
-	
 	/**
 	 * Returns whether each (x,y) coordinate in this frame is the same as the coordinate (x+xShift, y+yShift) in the
 	 * given frame as long as (x+xShift, y+yShift) is within the bounds of frame.
@@ -110,17 +117,45 @@ class Frame {
 		return true;
 	}
 	
-	void removeFloatingPixels() { //??? removeFloatingPixels
-		for (int y = 0; y < height - 1; y++) {
+	void removeFloatingPixels(int level) { //!!
+		for (int y = height - level; y > 0; y--) {
 			for (int x = 0; x < width; x++) {
 				//Check if current pixel is on, but the pixel below is off
-				if (pixelValue(x, y) && !pixelValue(x, y + 1)) {
+				if (pixelValue(x, y) && !pixelValue(x, y - 1)) {
 					matrix.get(y).set(x, false);
 				}
 			}
 		}
 	}
-	
+
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Frame frame = (Frame) o;
+		return getHeight() == frame.getHeight() &&
+				getWidth() == frame.getWidth() &&
+				isSameMatrix(frame);
+	}
+
+	private boolean isSameMatrix(Frame frame){
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (this.pixelValue(x, y) != frame.pixelValue(x, y)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(matrix, getHeight(), getWidth());
+	}
+
 	/**
 	 * @return the height
 	 */
